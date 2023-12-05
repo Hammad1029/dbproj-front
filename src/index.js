@@ -15,6 +15,8 @@ import 'assets/third-party/apex-chart.css';
 import App from './App';
 import { store } from 'store';
 import reportWebVitals from './reportWebVitals';
+import 'react-notifications/lib/notifications.css';
+import { NotificationContainer } from 'react-notifications';
 
 // ==============================|| MAIN - REACT DOM RENDER  ||============================== //
 
@@ -23,7 +25,8 @@ const root = createRoot(container); // createRoot(container!) if you use TypeScr
 root.render(
   <StrictMode>
     <ReduxProvider store={store}>
-      <BrowserRouter basename="/free">
+      <BrowserRouter basename="/">
+        <NotificationContainer />
         <App />
       </BrowserRouter>
     </ReduxProvider>

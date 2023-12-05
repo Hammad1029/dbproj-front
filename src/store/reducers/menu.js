@@ -7,7 +7,7 @@ const initialState = {
   defaultId: 'dashboard',
   openComponent: 'buttons',
   drawerOpen: false,
-  componentDrawerOpen: true
+  componentDrawerOpen: false
 };
 
 // ==============================|| SLICE - MENU ||============================== //

@@ -33,6 +33,13 @@ import avatar1 from 'assets/images/users/avatar-1.png';
 import avatar2 from 'assets/images/users/avatar-2.png';
 import avatar3 from 'assets/images/users/avatar-3.png';
 import avatar4 from 'assets/images/users/avatar-4.png';
+import { useDispatch, useSelector } from 'react-redux';
+import SuppliersTable from './SuppliersTable';
+import ProductsTable from './ProductsTable';
+import httpService, { endpoints } from 'utils/httpService';
+import { setOrders, setProducts, setStats, setSuppliers } from 'store/reducers/appInfo';
+import { useEffect } from 'react';
+import ReactApexChart from 'react-apexcharts';
 
 // avatar style
 const avatarSX = {
@@ -70,8 +77,95 @@ const status = [
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 const DashboardDefault = () => {
-  const [value, setValue] = useState('today');
-  const [slot, setSlot] = useState('week');
+  const { stats, products, suppliers, orders } = useSelector(state => state.appInfo)
+
+  const dispatch = useDispatch();
+  const [search, setSearch] = useState({
+    supplier: "", product: "", order: ""
+  })
+
+
+  const categoryWise = {
+    series: stats.categoryWise.map(i => i.sum),
+    options: {
+      chart: {
+        width: 380,
+        type: 'pie',
+      },
+      labels: stats.categoryWise.map(i => i.category),
+      responsive: [{
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: 200
+          },
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }]
+    },
+  }
+
+  const supplierWise = {
+    series: stats.supplierWise.map(i => i.sum),
+    options: {
+      chart: {
+        width: 380,
+        type: 'pie',
+      },
+      labels: stats.supplierWise.map(i => i.supplier_name),
+      responsive: [{
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: 200
+          },
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }]
+    },
+  }
+
+  const getStats = async () => {
+    const stats = await httpService({
+      base: endpoints.orders.base,
+      endpoint: endpoints.orders.getStats
+    })
+    if (stats) dispatch(setStats(stats))
+  }
+
+  const searchSuppliers = async (text = "") => {
+    const res = await httpService({
+      base: endpoints.suppliers.base,
+      endpoint: endpoints.suppliers.list,
+      reqBody: { keyword: text }
+    });
+    if (res) dispatch(setSuppliers(res))
+    getStats();
+  }
+
+  const searchProducts = async (text = "") => {
+    const res = await httpService({
+      base: endpoints.product.base,
+      endpoint: endpoints.product.list,
+      reqBody: { keyword: text }
+    });
+    if (res) dispatch(setProducts(res));
+    getStats();
+  }
+
+  const searchOrders = async (text = "") => {
+    const res = await httpService({
+      base: endpoints.orders.base,
+      endpoint: endpoints.orders.list,
+      reqBody: { keyword: text }
+    });
+    if (res) dispatch(setOrders(res));
+    getStats();
+  }
 
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -80,22 +174,22 @@ const DashboardDefault = () => {
         <Typography variant="h5">Dashboard</Typography>
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Page Views" count="4,42,236" percentage={59.3} extra="35,000" />
+        <AnalyticEcommerce title="Total Orders" count={stats.totalOrders[0].count} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Users" count="78,250" percentage={70.5} extra="8,900" />
+        <AnalyticEcommerce title="Total Products" count={stats.totalProducts[0].count} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Order" count="18,800" percentage={27.4} isLoss color="warning" extra="1,943" />
+        <AnalyticEcommerce title="Total Suppliers" count={stats.totalSuppliers[0].count} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Sales" count="$35,078" percentage={27.4} isLoss color="warning" extra="$20,395" />
+        <AnalyticEcommerce title="Total Revenue" count={stats.totalRevenue[0].sum} />
       </Grid>
 
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
 
       {/* row 2 */}
-      <Grid item xs={12} md={7} lg={8}>
+      {/*<Grid item xs={12} md={7} lg={8}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Unique Visitor</Typography>
@@ -126,8 +220,8 @@ const DashboardDefault = () => {
             <IncomeAreaChart slot={slot} />
           </Box>
         </MainCard>
-      </Grid>
-      <Grid item xs={12} md={5} lg={4}>
+      </Grid>*/}
+      {/* <Grid item xs={12} md={5} lg={4}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Income Overview</Typography>
@@ -145,21 +239,57 @@ const DashboardDefault = () => {
           </Box>
           <MonthlyBarChart />
         </MainCard>
-      </Grid>
+      </Grid> */}
 
       {/* row 3 */}
-      <Grid item xs={12} md={7} lg={8}>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
-            <Typography variant="h5">Recent Orders</Typography>
-          </Grid>
-          <Grid item />
-        </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <OrdersTable />
+      <Grid item xs={12} md={9}>
+        <MainCard sx={{ mt: 2, }} content={false}>
+          <OrdersTable
+            data={orders}
+            name="Orders"
+            getData={searchOrders}
+            updateProducts={searchProducts}
+            base={endpoints.orders}
+            columns={["order_id", "name", "contact", "shipping_address", "order_date", "description"]}
+          />
         </MainCard>
       </Grid>
-      <Grid item xs={12} md={5} lg={4}>
+      <Grid xs={12} md={3} sx={{ padding: 2 }}>
+        <MainCard sx={{ mt: 2, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} content={false}>
+          <ReactApexChart options={categoryWise.options} series={categoryWise.series} type="pie" width={380} />
+          <Typography variant="h5">Category Wise Data</Typography>
+        </MainCard>
+      </Grid>
+      <Grid item xs={12} md={9} sx={{ padding: 2 }}>
+        <MainCard sx={{ mt: 2 }} content={false}>
+          <ProductsTable
+            data={products}
+            name="Products"
+            getData={searchProducts}
+            base={endpoints.product}
+            columns={["product_id", "name", "description", "category", "quantity", "price", "supplier_id",]}
+          />
+        </MainCard>
+      </Grid>
+      <Grid xs={12} md={3}>
+        <MainCard sx={{ mt: 2, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }} content={false}>
+          <ReactApexChart options={supplierWise.options} series={supplierWise.series} type="pie" width={380} />
+          <Typography variant="h5">Supplier Wise Data</Typography>
+        </MainCard>
+      </Grid>
+      <Grid item xs={12} md={7}>
+        <MainCard sx={{ mt: 2 }} content={false}>
+          <SuppliersTable
+            data={suppliers}
+            name="Suppliers"
+            getData={searchSuppliers}
+            base={endpoints.suppliers}
+            columns={["supplier_id", "name", "contact"]}
+          />
+        </MainCard>
+      </Grid>
+
+      {/* <Grid item xs={12} md={5} lg={4}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Analytics Report</Typography>
@@ -183,10 +313,10 @@ const DashboardDefault = () => {
           </List>
           <ReportAreaChart />
         </MainCard>
-      </Grid>
+      </Grid> */}
 
       {/* row 4 */}
-      <Grid item xs={12} md={7} lg={8}>
+      {/* <Grid item xs={12} md={7} lg={8}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Sales Report</Typography>
@@ -336,8 +466,8 @@ const DashboardDefault = () => {
             </Button>
           </Stack>
         </MainCard>
-      </Grid>
-    </Grid>
+      </Grid> */}
+    </Grid >
   );
 };
 

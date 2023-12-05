@@ -44,11 +44,7 @@ const AnalyticEcommerce = ({ color, title, count, percentage, isLoss, extra }) =
     </Stack>
     <Box sx={{ pt: 2.25 }}>
       <Typography variant="caption" color="textSecondary">
-        You made an extra{' '}
-        <Typography component="span" variant="caption" sx={{ color: `${color || 'primary'}.main` }}>
-          {extra}
-        </Typography>{' '}
-        this year
+        Figures are launch till date
       </Typography>
     </Box>
   </MainCard>

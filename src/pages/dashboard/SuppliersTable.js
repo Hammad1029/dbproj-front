@@ -23,9 +23,8 @@ import * as Yup from "yup"
 import WithModal from 'components/WithModal';
 import httpService from 'utils/httpService';
 import { useEffect, useState } from 'react';
-import OrderProduct from './OrderProduct';
 
-const OrdersTable = ({ base = "", data = [{}], name = "", getData = () => { }, columns = [], updateProducts, ...props }) => {
+const SuppliersTable = ({ base = "", data = [{}], name = "", getData = () => { }, columns = [], ...props }) => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -49,7 +48,7 @@ const OrdersTable = ({ base = "", data = [{}], name = "", getData = () => { }, c
                 const res = await httpService({
                   base: base.base,
                   endpoint: base.create,
-                  reqBody: { ...values, contact: "0" + values.contact },
+                  reqBody: values,
                   successNotif: true,
                   description: `${name} created`
                 })
@@ -123,12 +122,6 @@ const OrdersTable = ({ base = "", data = [{}], name = "", getData = () => { }, c
                   padding='normal'
                 >
                   <ButtonGroup variant="contained">
-                    <Button onClick={() => props.openModal({
-                      bodyComp: (
-                        <OrderProduct orderId={row.order_id} updateProducts={updateProducts} />
-                      ),
-                      title: `View products`,
-                    })}>View Products</Button>
                     <Button sx={{ backgroundColor: "orange" }} onClick={() => props.openModal({
                       bodyComp: (
                         <ModalForm initialValues={row} submit={async (values) => {
@@ -151,7 +144,7 @@ const OrdersTable = ({ base = "", data = [{}], name = "", getData = () => { }, c
                       const res = await httpService({
                         base: base.base,
                         endpoint: base.delete,
-                        reqBody: { order_id: row.order_id },
+                        reqBody: { supplier_id: row.supplier_id },
                         successNotif: true,
                         description: `${name} deleted`
                       })
@@ -168,7 +161,7 @@ const OrdersTable = ({ base = "", data = [{}], name = "", getData = () => { }, c
   );
 }
 
-export default WithModal(OrdersTable)
+export default WithModal(SuppliersTable)
 
 const ModalForm = ({ initialValues = {}, submit = () => { } }) => {
   return (
@@ -177,8 +170,6 @@ const ModalForm = ({ initialValues = {}, submit = () => { } }) => {
       validationSchema={Yup.object().shape({
         name: Yup.string().max(255).required('name is required'),
         contact: Yup.string().max(255).required('contact is required'),
-        shipping_address: Yup.string().max(255).required('contact is required'),
-        description: Yup.string().max(255).required('contact is required'),
       })}
       onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
         try {
@@ -198,7 +189,7 @@ const ModalForm = ({ initialValues = {}, submit = () => { } }) => {
             sx={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
             <Grid item xs={12}>
               <Stack spacing={1}>
-                <InputLabel>Customer Name</InputLabel>
+                <InputLabel>Supplier Name</InputLabel>
                 <OutlinedInput
                   value={values.name}
                   name="name"
@@ -216,55 +207,18 @@ const ModalForm = ({ initialValues = {}, submit = () => { } }) => {
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1}>
-                <InputLabel >Contact</InputLabel>
+                <InputLabel >Supplier Contact</InputLabel>
                 <OutlinedInput
                   value={values.contact}
                   name="contact"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  type="number"
                   fullWidth
                   error={Boolean(touched.contact && errors.contact)}
                 />
                 {touched.contact && errors.contact && (
                   <FormHelperText error>
                     {errors.contact}
-                  </FormHelperText>
-                )}
-              </Stack>
-            </Grid>
-            <Grid item xs={12}>
-              <Stack spacing={1}>
-                <InputLabel>Shipping Address</InputLabel>
-                <OutlinedInput
-                  value={values.shipping_address}
-                  name="shipping_address"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  fullWidth
-                  error={Boolean(touched.shipping_address && errors.shipping_address)}
-                />
-                {touched.shipping_address && errors.shipping_address && (
-                  <FormHelperText error>
-                    {errors.shipping_address}
-                  </FormHelperText>
-                )}
-              </Stack>
-            </Grid>
-            <Grid item xs={12}>
-              <Stack spacing={1}>
-                <InputLabel>Description</InputLabel>
-                <OutlinedInput
-                  value={values.description}
-                  name="description"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  fullWidth
-                  error={Boolean(touched.description && errors.description)}
-                />
-                {touched.description && errors.description && (
-                  <FormHelperText error>
-                    {errors.description}
                   </FormHelperText>
                 )}
               </Stack>

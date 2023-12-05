@@ -42,7 +42,6 @@ const NavItem = ({ item, level }) => {
     if (pathname.includes(item.url)) {
       dispatch(activeItem({ openItem: [item.id] }));
     }
-    // eslint-disable-next-line
   }, [pathname]);
 
   const textColor = 'text.primary';
