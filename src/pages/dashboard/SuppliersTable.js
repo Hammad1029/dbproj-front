@@ -211,6 +211,7 @@ const ModalForm = ({ initialValues = {}, submit = () => { } }) => {
                 <OutlinedInput
                   value={values.contact}
                   name="contact"
+                  type="number"
                   onBlur={handleBlur}
                   onChange={handleChange}
                   fullWidth

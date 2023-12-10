@@ -86,7 +86,7 @@ const DashboardDefault = () => {
 
 
   const categoryWise = {
-    series: stats.categoryWise.map(i => i.sum),
+    series: stats.categoryWise.map(i => Number(i.sum)),
     options: {
       chart: {
         width: 380,
@@ -108,7 +108,7 @@ const DashboardDefault = () => {
   }
 
   const supplierWise = {
-    series: stats.supplierWise.map(i => i.sum),
+    series: stats.supplierWise.map(i => Number(i.sum)),
     options: {
       chart: {
         width: 380,
@@ -174,16 +174,16 @@ const DashboardDefault = () => {
         <Typography variant="h5">Dashboard</Typography>
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Orders" count={stats.totalOrders[0].count} />
+        <AnalyticEcommerce title="Total Orders" count={stats.totalOrders[0].count || 0} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Products" count={stats.totalProducts[0].count} />
+        <AnalyticEcommerce title="Total Products" count={stats.totalProducts[0].count || 0} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Suppliers" count={stats.totalSuppliers[0].count} />
+        <AnalyticEcommerce title="Total Suppliers" count={stats.totalSuppliers[0].count || 0} />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Revenue" count={stats.totalRevenue[0].sum} />
+        <AnalyticEcommerce title="Total Revenue" count={stats.totalRevenue[0].sum || 0} />
       </Grid>
 
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
@@ -250,7 +250,7 @@ const DashboardDefault = () => {
             getData={searchOrders}
             updateProducts={searchProducts}
             base={endpoints.orders}
-            columns={["order_id", "name", "contact", "shipping_address", "order_date", "description"]}
+            columns={["order_id", "name", "contact", "shipping_address", "order_date", "description", "total_value"]}
           />
         </MainCard>
       </Grid>
@@ -266,6 +266,7 @@ const DashboardDefault = () => {
             data={products}
             name="Products"
             getData={searchProducts}
+            getOrders={searchOrders}
             base={endpoints.product}
             columns={["product_id", "name", "description", "category", "quantity", "price", "supplier_id",]}
           />

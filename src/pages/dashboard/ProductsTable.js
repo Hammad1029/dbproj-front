@@ -28,7 +28,15 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { NotificationManager } from 'react-notifications';
 
-const ProductsTable = ({ base = "", data = [{}], name = "", getData = () => { }, columns = [], ...props }) => {
+const ProductsTable = ({
+  base = "",
+  data = [{}],
+  name = "",
+  getData = () => { },
+  columns = [],
+  getOrders = () => { },
+  ...props
+}) => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -130,6 +138,7 @@ const ProductsTable = ({ base = "", data = [{}], name = "", getData = () => { },
                       bodyComp: (
                         <AddProductToOrder cb={() => {
                           searchData();
+                          getOrders();
                           props.closeModal();
                         }} productId={row.product_id} />
                       ),
@@ -203,7 +212,7 @@ const AddProductToOrder = ({ cb = () => { }, productId }) => {
               product_id: productId
             },
             successNotif: true,
-            description: "Product deleted"
+            description: "Product added"
           })
           if (res) cb()
         }

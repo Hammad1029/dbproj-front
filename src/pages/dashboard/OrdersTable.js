@@ -125,7 +125,7 @@ const OrdersTable = ({ base = "", data = [{}], name = "", getData = () => { }, c
                   <ButtonGroup variant="contained">
                     <Button onClick={() => props.openModal({
                       bodyComp: (
-                        <OrderProduct orderId={row.order_id} updateProducts={updateProducts} />
+                        <OrderProduct orderId={row.order_id} updateProducts={updateProducts} getOrders={getData} />
                       ),
                       title: `View products`,
                     })}>View Products</Button>
@@ -155,7 +155,10 @@ const OrdersTable = ({ base = "", data = [{}], name = "", getData = () => { }, c
                         successNotif: true,
                         description: `${name} deleted`
                       })
-                      if (res) searchData();
+                      if (res) {
+                        searchData();
+                        updateProducts();
+                      }
                     }}>Delete</Button>
                   </ButtonGroup>
                 </TableCell>

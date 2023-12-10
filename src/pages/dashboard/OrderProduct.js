@@ -17,7 +17,7 @@ import {
 import httpService, { endpoints } from 'utils/httpService';
 import { useEffect, useState } from 'react';
 
-const OrderProduct = ({ orderId = "1", updateProducts }) => {
+const OrderProduct = ({ orderId = "1", updateProducts, getOrders }) => {
     const [products, setProducts] = useState([]);
     const setData = async () => {
         const res = await httpService({
@@ -26,7 +26,8 @@ const OrderProduct = ({ orderId = "1", updateProducts }) => {
             reqBody: { order_id: orderId },
         })
         if (res) {
-            setProducts(res)
+            setProducts(res);
+            getOrders();
             updateProducts();
         }
     }

@@ -28,7 +28,8 @@ import SettingTab from './SettingTab';
 // assets
 import avatar1 from 'assets/images/users/avatar-1.png';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from 'store/reducers/user';
 
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
@@ -57,8 +58,9 @@ function a11yProps(index) {
 const Profile = () => {
   const theme = useTheme();
   const username = useSelector(state => state.user.userDetails.username)
+  const dispatch = useDispatch();
   const handleLogout = async () => {
-    // logout
+    dispatch(logoutUser())
   };
 
   const anchorRef = useRef(null);
@@ -169,7 +171,7 @@ const Profile = () => {
                               label="Profile"
                               {...a11yProps(0)}
                             />
-                            <Tab
+                            {/* <Tab
                               sx={{
                                 display: 'flex',
                                 flexDirection: 'row',
@@ -180,7 +182,7 @@ const Profile = () => {
                               icon={<SettingOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
                               label="Setting"
                               {...a11yProps(1)}
-                            />
+                            /> */}
                           </Tabs>
                         </Box>
                         <TabPanel value={value} index={0} dir={theme.direction}>

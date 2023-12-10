@@ -27,7 +27,14 @@ const httpService = async (config = {}) => {
         return false;
     } catch (e) {
         console.error(e);
-        NotificationManager.error("Please contact system administrators", "ERROR");
+        const constraintError = e?.response?.data?.data?.original?.constraint || false;
+        console.log("hi", constraintError)
+        NotificationManager.error(
+            constraintError
+                ? `Constraint Error: ${constraintError}`
+                : "Please contact system administrators"
+            , "ERROR"
+        );
         return false
     }
 }
